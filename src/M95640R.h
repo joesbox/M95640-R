@@ -71,7 +71,7 @@ class M95640R
 {
   public:
     M95640R(SPIClass *spi, int ns);
-    void begin(void);
+    void begin(uint32_t spiClock);
     void end(void);
     void EepromRead(uint16_t nAddress, uint8_t cNbBytes, uint8_t* pcBuffer);
     void EepromWrite(uint16_t nAddress, uint8_t cNbBytes, uint8_t* pcBuffer);
@@ -84,6 +84,7 @@ class M95640R
 
     SPIClass *dev_spi;
     int ns_pin;
+    uint32_t SPIClockSpeed;
 };
 
 #endif /* __M95640R_H__ */

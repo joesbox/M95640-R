@@ -54,11 +54,14 @@ M95640R::M95640R(SPIClass *spi, int ns) : dev_spi(spi), ns_pin(ns)
 
 /**
 * @brief  Initialize the M95640R library.
-* @param  None.
+* @param  spiClock SPI clock speed
 * @retval None.
 */
-void M95640R::begin(void)
-{
+void M95640R::begin(uint32_t spiClock)
+{ 
+  /* Set SPI clock speed */ 
+  SPIClockSpeed = spiClock;
+  
   /* Initialize NS pin */
   pinMode(ns_pin, OUTPUT);
   digitalWrite(ns_pin, HIGH);
@@ -100,7 +103,7 @@ void M95640R::EepromRead(uint16_t nAddress, uint8_t cNbBytes, uint8_t* pcBuffer)
   /* Wait the end of a previous write operation */
   EepromWaitEndWriteOperation();
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
@@ -148,7 +151,7 @@ void M95640R::EepromWrite(uint16_t nAddress, uint8_t cNbBytes, uint8_t* pcBuffer
     address[k] = (uint8_t)(nAddress>>((1-k)*8));
   }
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
@@ -178,7 +181,7 @@ void M95640R::EepromWaitEndWriteOperation(void)
   uint8_t dummy = 0xFF;
   uint8_t status;
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
@@ -206,7 +209,7 @@ void M95640R::EepromWriteEnable(void)
 {
   uint8_t cmd = EEPROM_CMD_WREN;
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
@@ -229,7 +232,7 @@ uint8_t M95640R::EepromStatus(void)
 {
   uint8_t cmd[2] = {EEPROM_CMD_RDSR, 0xFF};
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
@@ -252,7 +255,7 @@ uint8_t M95640R::EepromSetSrwd(void)
 {
   uint8_t cmd[2] = {EEPROM_CMD_WRSR, EEPROM_STATUS_SRWD};
 
-  dev_spi->beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  dev_spi->beginTransaction(SPISettings(SPIClockSpeed, MSBFIRST, SPI_MODE0));
 
   /* Put the SPI chip select low to start the transaction */
   digitalWrite(ns_pin, LOW);
